@@ -16,7 +16,7 @@ pygame.display.set_caption('Space Invaders')
 
 WHITE = (255, 255, 255) # White color in RGB tuple
 
-SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 80, 80
+SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 40, 40
 ALIEN_WIDTH, ALIEN_HEIGHT = 25, 25
 
 # Importing user spaceship surface
@@ -44,6 +44,7 @@ def draw_window(user, alien):
 # Change spaceship positions for keys pressed
 def spaceship_movement(keys_pressed, spaceship):
     # Adding movement to the spaceship
+    # and making sure they can't move past the window's border
     if keys_pressed[pygame.K_LEFT] and spaceship.x > VEL: # LEFT KEY
         spaceship.x -= VEL
     if keys_pressed[pygame.K_RIGHT] and spaceship.x + spaceship.width < WIDTH - VEL: # RIGHT KEY
