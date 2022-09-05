@@ -13,11 +13,20 @@ pygame.display.set_caption('Space Invaders')
 
 WHITE = (255, 255, 255) # White color in RGB tuple
 
-SPACESHIP_IMAGE = pygame.image.load('game_images\spaceship.png')
+SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 80,80
+
+# Importing user spaceship surface
+SPACESHIP_IMAGE = pygame.image.load(os.path.join('game_images','spaceship.png'))
+# Rezising the spaceship
+SPACESHIP_IMAGE = pygame.transform.scale(SPACESHIP_IMAGE, (SPACESHIP_WIDTH, SPACESHIP_HEIGHT))
+
 
 def draw_window():
     # Filling the windows with a color RGB
     WIN.fill(WHITE)
+
+    # Drawing surfaces in the screen
+    WIN.blit(SPACESHIP_IMAGE, (300, 250))
 
     #Update the display in every run of the loop
     pygame.display.update()
