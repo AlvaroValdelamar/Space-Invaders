@@ -41,11 +41,26 @@ def draw_window(user, alien):
     #Update the display in every run of the loop
     pygame.display.update()
 
+# Change spaceship positions for keys pressed
+def spaceship_movement(keys_pressed, spaceship):
+    # Adding movement to the spaceship
+    if keys_pressed[pygame.K_LEFT]: # LEFT KEY
+        spaceship.x -= VEL
+    if keys_pressed[pygame.K_RIGHT]: # RIGHT KEY
+        spaceship.x += VEL
+    if keys_pressed[pygame.K_UP]: # UP KEY
+        spaceship.y -= VEL
+    if keys_pressed[pygame.K_DOWN]: # DOWN KEY
+        spaceship.y += VEL
+
+def alien_movement(alien):
+    alien.y += 1
+
 
 def main():
 
     # Rectangle to keep track of the user spaceship
-    user = pygame.Rect(300, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
+    spaceship = pygame.Rect(300, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
     alien = pygame.Rect(100, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
 
     # Control the speed of the while loop
@@ -63,16 +78,15 @@ def main():
             if event.type == pygame.QUIT:
                 run = False # Exit while loop
 
-        # Reading keys pressed down by the user
-        # Adding movement to the spaceship
+        # Read keys pressed by the user
         keys_pressed = pygame.key.get_pressed()
-        if keys_pressed[pygame.K_LEFT]: # LEFT KEY
-            user.x -= VEL
-        if keys_pressed[pygame.K_RIGHT]: # RIGHT KEY
-            user.x += VEL
+        # Move the user spaceship
+        spaceship_movement(keys_pressed, spaceship)
+        # Move the alien
+        alien_movement(alien)
 
         # Update position of the player and aliens
-        draw_window(user, alien)
+        draw_window(spaceship, alien)
     
     pygame.quit() # End the game
 
