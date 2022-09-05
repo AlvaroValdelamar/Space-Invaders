@@ -39,12 +39,18 @@ ALIEN_IMAGE = pygame.image.load(os.path.join('game_images','alien.png'))
 # Rezising the alien
 ALIEN_IMAGE = pygame.transform.scale(ALIEN_IMAGE, (ALIEN_WIDTH, ALIEN_HEIGHT))
 
+# Importing background surface
+BACKGROUND_IMAGE = pygame.image.load(os.path.join('game_images','background.png'))
+# Rezising the background
+BACKGROUND_IMAGE = pygame.transform.scale(BACKGROUND_IMAGE, (WIDTH, HEIGHT))
+
 
 def draw_window(user, alien, bullets):
     # Filling the windows with a color RGB
     WIN.fill(WHITE)
 
     # Drawing surfaces in the screen
+    WIN.blit(BACKGROUND_IMAGE, (0, 0))
     WIN.blit(SPACESHIP_IMAGE, (user.x, user.y))
     WIN.blit(ALIEN_IMAGE, (alien.x, alien.y))
 
