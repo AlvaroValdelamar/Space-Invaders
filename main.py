@@ -11,13 +11,23 @@ FPS = 60
 # Velocity at which the objects in the screen move
 VEL = 3
 
+# Velocity of the bullets fired by the user
+VEL_BULLET = 5.5
+# Max amount of bullets on screen
+MAX_BULLETS = 10
+
 # Changing the window's name
 pygame.display.set_caption('Space Invaders')
 
 WHITE = (255, 255, 255) # White color in RGB tuple
+PURPLE = (255, 0, 255)
 
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 40, 40
 ALIEN_WIDTH, ALIEN_HEIGHT = 25, 25
+
+# Custom events
+USER_HIT = pygame.USEREVENT + 1 # If a user hits an alien with a bullet
+ALIEN_HIT = pygame.USEREVENT + 2 # If a user collides with an alien
 
 # Importing user spaceship surface
 SPACESHIP_IMAGE = pygame.image.load(os.path.join('game_images','spaceship.png'))
@@ -30,13 +40,16 @@ ALIEN_IMAGE = pygame.image.load(os.path.join('game_images','alien.png'))
 ALIEN_IMAGE = pygame.transform.scale(ALIEN_IMAGE, (ALIEN_WIDTH, ALIEN_HEIGHT))
 
 
-def draw_window(user, alien):
+def draw_window(user, alien, bullets):
     # Filling the windows with a color RGB
     WIN.fill(WHITE)
 
     # Drawing surfaces in the screen
     WIN.blit(SPACESHIP_IMAGE, (user.x, user.y))
     WIN.blit(ALIEN_IMAGE, (alien.x, alien.y))
+
+    for bullet in bullets:
+        pygame.draw.rect(WIN, PURPLE, bullet)
 
     #Update the display in every run of the loop
     pygame.display.update()
@@ -57,12 +70,23 @@ def spaceship_movement(keys_pressed, spaceship):
 def alien_movement(alien):
     alien.y += 1
 
+# Moves bullets and check if the collided with an alien
+def handle_bullets(bullets, alien):
+    for bullet in bullets:  # Loop through all bullets in the game
+        bullet.y -= VEL_BULLET # Moving bullets
+        if alien.colliderect(bullet): # Check if a bullets hits an alien
+            pygame.event.post(pygame.event.Event(USER_HIT))
+            bullets.remove(bullet) # Remove bullet from list
+
 
 def main():
 
     # Rectangle to keep track of the user spaceship
     spaceship = pygame.Rect(300, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
+    # Rectangle to keep track of the alien
     alien = pygame.Rect(100, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
+    # Bullets fired by the user
+    bullets = []
 
     # Control the speed of the while loop
     clock = pygame.time.Clock()
@@ -78,6 +102,15 @@ def main():
             # check if user quitted the game
             if event.type == pygame.QUIT:
                 run = False # Exit while loop
+            
+            # Creating a bullet if spacebar is pressed down
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and len(bullets) < MAX_BULLETS:
+                    bullet = pygame.Rect(spaceship.x + spaceship.width//2,
+                                        spaceship.y - spaceship.height//2, 10, 5)
+                    bullets.append(bullet)
+        
+        handle_bullets(bullets, alien)
 
         # Read keys pressed by the user
         keys_pressed = pygame.key.get_pressed()
@@ -87,7 +120,7 @@ def main():
         alien_movement(alien)
 
         # Update position of the player and aliens
-        draw_window(spaceship, alien)
+        draw_window(spaceship, alien, bullets)
     
     pygame.quit() # End the game
 
