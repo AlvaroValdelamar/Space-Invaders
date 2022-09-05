@@ -77,6 +77,8 @@ def handle_bullets(bullets, alien):
         if alien.colliderect(bullet): # Check if a bullets hits an alien
             pygame.event.post(pygame.event.Event(USER_HIT))
             bullets.remove(bullet) # Remove bullet from list
+        elif bullet.y < 0:
+            bullets.remove(bullet)
 
 
 def main():
