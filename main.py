@@ -44,13 +44,13 @@ def draw_window(user, alien):
 # Change spaceship positions for keys pressed
 def spaceship_movement(keys_pressed, spaceship):
     # Adding movement to the spaceship
-    if keys_pressed[pygame.K_LEFT]: # LEFT KEY
+    if keys_pressed[pygame.K_LEFT] and spaceship.x > VEL: # LEFT KEY
         spaceship.x -= VEL
-    if keys_pressed[pygame.K_RIGHT]: # RIGHT KEY
+    if keys_pressed[pygame.K_RIGHT] and spaceship.x + spaceship.width < WIDTH - VEL: # RIGHT KEY
         spaceship.x += VEL
-    if keys_pressed[pygame.K_UP]: # UP KEY
+    if keys_pressed[pygame.K_UP] and spaceship.y > VEL: # UP KEY
         spaceship.y -= VEL
-    if keys_pressed[pygame.K_DOWN]: # DOWN KEY
+    if keys_pressed[pygame.K_DOWN] and spaceship.y + spaceship.height < HEIGHT - VEL: # DOWN KEY
         spaceship.y += VEL
 
 def alien_movement(alien):
