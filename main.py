@@ -1,5 +1,6 @@
 import pygame
 import os
+import time
 pygame.font.init()
 
 # Creating game window
@@ -49,7 +50,7 @@ BACKGROUND_IMAGE = pygame.image.load(os.path.join('game_images','background.png'
 BACKGROUND_IMAGE = pygame.transform.scale(BACKGROUND_IMAGE, (WIDTH, HEIGHT))
 
 
-def draw_window(spaceship, aliens, bullets, spaceship_health):
+def draw_window(spaceship, aliens, bullets, user_score, spaceship_health):
     # Filling the windows with a color RGB
     WIN.fill(WHITE)
 
@@ -58,6 +59,9 @@ def draw_window(spaceship, aliens, bullets, spaceship_health):
     WIN.blit(SPACESHIP_IMAGE, (spaceship.x, spaceship.y))
     for alien in aliens:
         WIN.blit(ALIEN_IMAGE, (alien.x, alien.y))
+
+    score_text = HEALT_FONT.render(str(user_score), 1, WHITE)
+    WIN.blit(score_text, (score_text.get_width()-10, 10))
 
     health_text = HEALT_FONT.render("<3 "+str(spaceship_health), 1, WHITE)
     WIN.blit(health_text, (WIDTH - health_text.get_width()-10, 10))
@@ -103,6 +107,12 @@ def handle_bullets(bullets, aliens):
         if bullet.y < 0:
             bullets.remove(bullet)
 
+def draw_end_screen_text(text):
+    draw_text = HEALT_FONT.render(text, 1, WHITE)
+    WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width()/2, 
+                        HEIGHT/2 - draw_text.get_height()/2))
+    pygame.display.update()
+    pygame.time.delay(5000)
 
 def main():
 
@@ -111,20 +121,30 @@ def main():
     # Rectangle to keep track of the alien
     aliens = []
     for x in range(8):
-        alien = pygame.Rect(60 * x, ALIEN_HEIGHT, ALIEN_WIDTH, ALIEN_HEIGHT)
+        alien = pygame.Rect(60 * x + 30, ALIEN_HEIGHT, ALIEN_WIDTH, ALIEN_HEIGHT)
         aliens.append(alien)
     # Bullets fired by the user
     bullets = []
 
+    user_score = 0
     spaceship_health = 5
 
     # Control the speed of the while loop
     clock = pygame.time.Clock()
     # Game loop that terminates when the games end
     run = True
+    oldepoch = time.time()
     while run:
         # Making sure the game runs at the set FPS
         clock.tick(FPS)
+
+        new_epoch = time.time() 
+        if new_epoch - oldepoch >= 1:
+            oldepoch = new_epoch
+            for x in range(8):
+                alien = pygame.Rect(60 * x + 30, ALIEN_HEIGHT, ALIEN_WIDTH, ALIEN_HEIGHT)
+                aliens.append(alien)
+
 
         # Looping through events in the game
         for event in pygame.event.get():
@@ -141,14 +161,13 @@ def main():
                     bullets.append(bullet)
 
             if event.type == USER_HIT:
-                pass
+                user_score += 1
 
             if event.type == ALIEN_HIT:
                 spaceship_health -= 1
+                if spaceship_health <= 0:
+                    spaceship_health = 0
 
-        if spaceship_health <= 0:
-            spaceship_health = 0
-            game_over_text = 'GAME OVER'
 
         # Draw and check for bullet hits to aliens
         handle_bullets(bullets, aliens)
@@ -161,7 +180,12 @@ def main():
         alien_movement(aliens, spaceship)
 
         # Update position of the player and aliens
-        draw_window(spaceship, aliens, bullets, spaceship_health)
+        draw_window(spaceship, aliens, bullets, user_score, spaceship_health)
+
+        if spaceship_health <= 0:
+            game_over_text = 'GAME OVER'
+            draw_end_screen_text(game_over_text)
+            break
     
     pygame.quit() # End the game
 
