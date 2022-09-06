@@ -50,6 +50,42 @@ BACKGROUND_IMAGE = pygame.image.load(os.path.join('game_images','background.png'
 # Rezising the background
 BACKGROUND_IMAGE = pygame.transform.scale(BACKGROUND_IMAGE, (WIDTH, HEIGHT))
 
+
+
+#create Explosion class
+class Explosion(pygame.sprite.Sprite):
+	def __init__(self, x, y):
+		pygame.sprite.Sprite.__init__(self)
+		self.images = []
+		for num in range(1, 5):
+			img = pygame.image.load(f"game_images/explosion{num}.png")
+			img = pygame.transform.scale(img, (50, 50))
+			self.images.append(img)
+		self.index = 0
+		self.image = self.images[self.index]
+		self.rect = self.image.get_rect()
+		self.rect.center = [x, y]
+		self.counter = 0
+
+	def update(self):
+		explosion_speed = 3
+		#update explosion animation
+		self.counter += 1
+
+		if self.counter >= explosion_speed and self.index < len(self.images) - 1:
+			self.counter = 0
+			self.index += 1
+			self.image = self.images[self.index]
+
+		#if the animation is complete, reset animation index
+		if self.index >= len(self.images) - 1 and self.counter >= explosion_speed:
+			self.kill()
+
+
+explosion_group = pygame.sprite.Group()
+
+
+
 # Change spaceship positions for keys pressed
 def spaceship_movement(keys_pressed, spaceship):
     # Adding movement to the spaceship
@@ -70,6 +106,9 @@ def alien_movement(aliens, spaceship):
         if alien.colliderect(spaceship): # Check if a bullets hits an alien
             pygame.event.post(pygame.event.Event(ALIEN_HIT))
             aliens.remove(alien)
+            explosion = Explosion(alien.x, alien.y)
+            explosion_group.add(explosion)
+            
         elif alien.y > HEIGHT:
             aliens.remove(alien)
 
@@ -82,8 +121,12 @@ def handle_bullets(bullets, aliens):
                 pygame.event.post(pygame.event.Event(USER_HIT))
                 bullets.remove(bullet) # Remove bullet from list
                 aliens.remove(alien)
+                explosion = Explosion(alien.x, alien.y)
+                explosion_group.add(explosion)
+
         if bullet.y < 0:
             bullets.remove(bullet)
+
 
 # Draw screen text when the user looses the game
 def draw_end_screen_text(text):
@@ -116,14 +159,19 @@ def draw_window(spaceship, aliens, bullets, user_score, spaceship_health):
 
     # Drawing surfaces in the screen
     WIN.blit(BACKGROUND_IMAGE, (0, 0))
-    WIN.blit(SPACESHIP_IMAGE, (spaceship.x, spaceship.y))
+
     for alien in aliens:
         WIN.blit(ALIEN_IMAGE, (alien.x, alien.y))
+
+    explosion_group.draw(WIN)
+    explosion_group.update()
+
+    WIN.blit(SPACESHIP_IMAGE, (spaceship.x, spaceship.y))
 
     score_text = HEALT_FONT.render(str(user_score), 1, WHITE)
     WIN.blit(score_text, (score_text.get_width()-10, 10))
 
-    health_text = HEALT_FONT.render("<3 "+str(spaceship_health), 1, WHITE)
+    health_text = HEALT_FONT.render("Health "+str(spaceship_health), 1, WHITE)
     WIN.blit(health_text, (WIDTH - health_text.get_width()-10, 10))
 
     for bullet in bullets:
@@ -182,11 +230,13 @@ def main():
 
             if event.type == USER_HIT:
                 user_score += 1
+                explosions = []
 
             if event.type == ALIEN_HIT:
                 spaceship_health -= 1
                 if spaceship_health <= 0:
                     spaceship_health = 0
+                explosions = []
 
 
         # Draw and check for bullet hits to aliens
@@ -209,7 +259,7 @@ def main():
             draw_end_screen_text(game_over_text)
             # Clear the game of the previous text screen
             draw_window(spaceship, aliens, bullets, user_score, spaceship_health)
-            final_score_text = "FINAL SCORE '\n'" + str(user_score)
+            final_score_text = "FINAL SCORE " + str(user_score)
             # Display text to the user to show that they have lost the game
             draw_end_screen_text(final_score_text)
             break
