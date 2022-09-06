@@ -12,9 +12,10 @@ FPS = 60
 
 # Velocity at which the objects in the screen move
 VEL = 3
-
 # Velocity of the bullets fired by the user
 VEL_BULLET = 5.5
+# Alien velocity
+VEL_ALIEN = 1
 # Max amount of bullets on screen
 MAX_BULLETS = 10
 
@@ -49,7 +50,66 @@ BACKGROUND_IMAGE = pygame.image.load(os.path.join('game_images','background.png'
 # Rezising the background
 BACKGROUND_IMAGE = pygame.transform.scale(BACKGROUND_IMAGE, (WIDTH, HEIGHT))
 
+# Change spaceship positions for keys pressed
+def spaceship_movement(keys_pressed, spaceship):
+    # Adding movement to the spaceship
+    # and making sure they can't move past the window's border
+    if keys_pressed[pygame.K_LEFT] and spaceship.x > VEL: # LEFT KEY
+        spaceship.x -= VEL
+    if keys_pressed[pygame.K_RIGHT] and spaceship.x + spaceship.width < WIDTH - VEL: # RIGHT KEY
+        spaceship.x += VEL
+    if keys_pressed[pygame.K_UP] and spaceship.y > VEL: # UP KEY
+        spaceship.y -= VEL
+    if keys_pressed[pygame.K_DOWN] and spaceship.y + spaceship.height < HEIGHT - VEL: # DOWN KEY
+        spaceship.y += VEL
 
+# Moves aliens and checks they collided with the user spaceship
+def alien_movement(aliens, spaceship):
+    for alien in aliens:
+        alien.y += VEL_ALIEN
+        if alien.colliderect(spaceship): # Check if a bullets hits an alien
+            pygame.event.post(pygame.event.Event(ALIEN_HIT))
+            aliens.remove(alien)
+        elif alien.y > HEIGHT:
+            aliens.remove(alien)
+
+# Moves bullets and check if the collided with an alien
+def handle_bullets(bullets, aliens):
+    for bullet in bullets:  # Loop through all bullets in the game
+        bullet.y -= VEL_BULLET # Moving bullets
+        for alien in aliens:
+            if alien.colliderect(bullet): # Check if a bullets hits an alien
+                pygame.event.post(pygame.event.Event(USER_HIT))
+                bullets.remove(bullet) # Remove bullet from list
+                aliens.remove(alien)
+        if bullet.y < 0:
+            bullets.remove(bullet)
+
+# Draw screen text when the user looses the game
+def draw_end_screen_text(text):
+    draw_text = HEALT_FONT.render(text, 1, WHITE)
+    WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width()/2, 
+                        HEIGHT/2 - draw_text.get_height()/2))
+    pygame.display.update()
+    pygame.time.delay(5000)
+
+# Draw screen text when user passes the current level
+def draw_next_level_screen_text(text):
+    draw_text = HEALT_FONT.render(text, 1, WHITE)
+    WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width()/2, 
+                        HEIGHT/2 - draw_text.get_height()/2))
+    pygame.display.update()
+    pygame.time.delay(3000)
+
+# Draw screen text to signal the start of the new level to the user
+def draw_new_level_text(new_level_number):
+    draw_text = HEALT_FONT.render('LEVEL ' + str(new_level_number), 1, WHITE)
+    WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width()/2, 
+                        HEIGHT/2 - draw_text.get_height()/2))
+    pygame.display.update()
+    pygame.time.delay(1000)
+
+# Draws the game in the loop
 def draw_window(spaceship, aliens, bullets, user_score, spaceship_health):
     # Filling the windows with a color RGB
     WIN.fill(WHITE)
@@ -72,50 +132,9 @@ def draw_window(spaceship, aliens, bullets, user_score, spaceship_health):
     #Update the display in every run of the loop
     pygame.display.update()
 
-# Change spaceship positions for keys pressed
-def spaceship_movement(keys_pressed, spaceship):
-    # Adding movement to the spaceship
-    # and making sure they can't move past the window's border
-    if keys_pressed[pygame.K_LEFT] and spaceship.x > VEL: # LEFT KEY
-        spaceship.x -= VEL
-    if keys_pressed[pygame.K_RIGHT] and spaceship.x + spaceship.width < WIDTH - VEL: # RIGHT KEY
-        spaceship.x += VEL
-    if keys_pressed[pygame.K_UP] and spaceship.y > VEL: # UP KEY
-        spaceship.y -= VEL
-    if keys_pressed[pygame.K_DOWN] and spaceship.y + spaceship.height < HEIGHT - VEL: # DOWN KEY
-        spaceship.y += VEL
-
-# Moves aliens and checks they collided with the user spaceship
-def alien_movement(aliens, spaceship):
-    for alien in aliens:
-        alien.y += 1
-        if alien.colliderect(spaceship): # Check if a bullets hits an alien
-            pygame.event.post(pygame.event.Event(ALIEN_HIT))
-            aliens.remove(alien)
-        elif alien.y > HEIGHT:
-            aliens.remove(alien)
-
-# Moves bullets and check if the collided with an alien
-def handle_bullets(bullets, aliens):
-    for bullet in bullets:  # Loop through all bullets in the game
-        bullet.y -= VEL_BULLET # Moving bullets
-        for alien in aliens:
-            if alien.colliderect(bullet): # Check if a bullets hits an alien
-                pygame.event.post(pygame.event.Event(USER_HIT))
-                bullets.remove(bullet) # Remove bullet from list
-                aliens.remove(alien)
-        if bullet.y < 0:
-            bullets.remove(bullet)
-
-def draw_end_screen_text(text):
-    draw_text = HEALT_FONT.render(text, 1, WHITE)
-    WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width()/2, 
-                        HEIGHT/2 - draw_text.get_height()/2))
-    pygame.display.update()
-    pygame.time.delay(5000)
-
+# Main function that runs the game
 def main():
-
+    global VEL_ALIEN
     # Rectangle to keep track of the user spaceship
     spaceship = pygame.Rect(300, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
     # Rectangle to keep track of the alien
@@ -128,6 +147,7 @@ def main():
 
     user_score = 0
     spaceship_health = 5
+    level_number = 1
 
     # Control the speed of the while loop
     clock = pygame.time.Clock()
@@ -182,10 +202,32 @@ def main():
         # Update position of the player and aliens
         draw_window(spaceship, aliens, bullets, user_score, spaceship_health)
 
+        # DISPLAY CHANGES WHEN USER LOSES THE GAME
         if spaceship_health <= 0:
             game_over_text = 'GAME OVER'
+            # Display text to the user to show that they have lost the game
             draw_end_screen_text(game_over_text)
+            # Clear the game of the previous text screen
+            draw_window(spaceship, aliens, bullets, user_score, spaceship_health)
+            final_score_text = "FINAL SCORE '\n'" + str(user_score)
+            # Display text to the user to show that they have lost the game
+            draw_end_screen_text(final_score_text)
             break
+        
+        # DISPLAY CHANGES FOR NEW LEVEL
+        if (user_score % 10 == 0) and (user_score > 0) and (user_score / level_number == 10):
+            level_text = 'LEVEL CLEARED'
+            new_level_number = user_score//10
+            # Draws the text to signal the current level has been cleared
+            draw_next_level_screen_text(level_text)
+            # Clear the game of the previous text screen
+            draw_window(spaceship, aliens, bullets, user_score, spaceship_health)
+            # Signal text to start new level
+            draw_new_level_text(new_level_number)
+            aliens = []
+            if VEL_ALIEN < VEL:
+                VEL_ALIEN *= new_level_number
+            level_number += 1 
     
     pygame.quit() # End the game
 
