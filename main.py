@@ -138,7 +138,7 @@ def draw_end_screen_text(text):
     WIN.blit(draw_text, (WIDTH/2 - draw_text.get_width()/2, 
                         HEIGHT/2 - draw_text.get_height()/2))
     pygame.display.update()
-    pygame.time.delay(5000)
+    pygame.time.delay(4000)
 
 # Draw screen text when user passes the current level
 def draw_next_level_screen_text(text):
@@ -222,6 +222,70 @@ def start_game_screen():
         pygame.display.update()
         pygame.time.wait(500)
 
+# Draws the play again? screen for the user to decide if he wants to play again or exit the game
+def draw_play_again_screen():
+    enter = False
+
+    # Control the speed of the while loop
+    clock = pygame.time.Clock()
+    
+    oldepoch = time.time()
+
+    # Until the user presses Enter
+    while enter is False:
+
+        # Making sure the game runs at the set FPS
+        clock.tick(FPS)
+
+        # Keeps track of time
+        new_epoch = time.time()
+
+         # Filling the windows with a color RGB
+        WIN.fill(WHITE)
+
+        # Drawing surfaces in the screen
+        WIN.blit(BACKGROUND_IMAGE, (0, 0))
+
+        # Shows the game title
+        
+        exit_game_txt = SUB_FONT.render('Exit game', 1, WHITE)
+        WIN.blit(exit_game_txt, (WIDTH/2 - exit_game_txt.get_width()/2, 
+                            HEIGHT/2 - exit_game_txt.get_height()*2))
+
+        or_txt = SUB_FONT.render('OR', 1, WHITE)
+        WIN.blit(or_txt, (WIDTH/2 - or_txt.get_width()/2, 
+                            HEIGHT/2 - or_txt.get_height()/2))
+
+        last_text_displayed = 0
+
+        if (new_epoch - oldepoch > 1) and (last_text_displayed == 0):
+            sub_title = SUB_FONT.render('Press Enter to play again', 1, WHITE)
+            WIN.blit(sub_title, (WIDTH/2 - sub_title.get_width()/2, 
+                                HEIGHT/2 + sub_title.get_height()))
+            
+            last_text_displayed = 1
+            oldepoch = new_epoch
+
+        elif last_text_displayed == 1:
+            new_epoch = time.time()
+            oldepoch = new_epoch
+            last_text_displayed = 0
+
+
+        # Looping through events in the game
+        for event in pygame.event.get():
+            # Creating a bullet if spacebar is pressed down
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    enter = True
+
+            # check if user quitted the game
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        
+        #Update the display in every run of the loop
+        pygame.display.update()
+        pygame.time.wait(500)
 
 # Draws the game in the loop
 def draw_window(spaceship, aliens, bullets, user_score, spaceship_health):
@@ -260,6 +324,10 @@ def draw_window(spaceship, aliens, bullets, user_score, spaceship_health):
 # Main function that runs the game
 def main():
     global VEL_ALIEN
+
+    # Loops through the start game screen until the user presses down the Enter key
+    start_game_screen()
+
     # Rectangle to keep track of the user spaceship
     spaceship = pygame.Rect(300, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
     # Rectangle to keep track of the alien
@@ -273,8 +341,6 @@ def main():
     user_score = 0
     spaceship_health = 5
     level_number = 1
-
-    start_game_screen()
 
     # Control the speed of the while loop
     clock = pygame.time.Clock()
@@ -341,6 +407,8 @@ def main():
             final_score_text = "FINAL SCORE " + str(user_score)
             # Display text to the user to show that they have lost the game
             draw_end_screen_text(final_score_text)
+            # Display Play Again? Screen
+            draw_play_again_screen()
             break
         
         # DISPLAY CHANGES FOR NEW LEVEL
