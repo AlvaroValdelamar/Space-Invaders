@@ -201,7 +201,9 @@ def main():
     clock = pygame.time.Clock()
     # Game loop that terminates when the games end
     run = True
+    pygame.time.delay(5000)
     oldepoch = time.time()
+
     while run:
         # Making sure the game runs at the set FPS
         clock.tick(FPS)
