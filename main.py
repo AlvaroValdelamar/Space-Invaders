@@ -467,7 +467,7 @@ def main():
             # Display text to the user to show that they have lost the game
             draw_end_screen_text(game_over_text)
             # Clear the game of the previous text screen
-            draw_window(spaceship, aliens, bullets, user_score, spaceship_health)
+            draw_window(spaceship, aliens, bullets, user_score, spaceship_health, explosion_group)
             final_score_text = "FINAL SCORE " + str(user_score)
             # Display text to the user to show that they have lost the game
             draw_end_screen_text(final_score_text)
