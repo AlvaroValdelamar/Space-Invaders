@@ -44,10 +44,25 @@ SPACESHIP_IMAGE = pygame.image.load(os.path.join('game_images','spaceship.png'))
 # Rezising the spaceship
 SPACESHIP_IMAGE = pygame.transform.scale(SPACESHIP_IMAGE, (SPACESHIP_WIDTH, SPACESHIP_HEIGHT))
 
-# Importing user alien surface
+# Importing red alien surface
 ALIEN_IMAGE = pygame.image.load(os.path.join('game_images','alien.png'))
-# Rezising the alien
+# Rezising the red alien
 ALIEN_IMAGE = pygame.transform.scale(ALIEN_IMAGE, (ALIEN_WIDTH, ALIEN_HEIGHT))
+
+# Importing blue alien surface
+ALIEN_IMAGE_BLUE = pygame.image.load(os.path.join('game_images','alien2.png'))
+# Rezising the blue alien
+ALIEN_IMAGE_BLUE = pygame.transform.scale(ALIEN_IMAGE_BLUE, (ALIEN_WIDTH, ALIEN_HEIGHT))
+
+# Importing white alien surface
+ALIEN_IMAGE_WHITE = pygame.image.load(os.path.join('game_images','alien3.png'))
+# Rezising the white alien
+ALIEN_IMAGE_WHITE = pygame.transform.scale(ALIEN_IMAGE_WHITE, (ALIEN_WIDTH, ALIEN_HEIGHT))
+
+# Importing green alien surface
+ALIEN_IMAGE_GREEN = pygame.image.load(os.path.join('game_images','alien4.png'))
+# Rezising the green alien
+ALIEN_IMAGE_GREEN = pygame.transform.scale(ALIEN_IMAGE_GREEN, (ALIEN_WIDTH, ALIEN_HEIGHT))
 
 # Importing background surface
 BACKGROUND_IMAGE = pygame.image.load(os.path.join('game_images','background.png'))
@@ -185,6 +200,33 @@ def start_game_screen():
         WIN.blit(game_title, (WIDTH/2 - game_title.get_width()/2, 
                             HEIGHT/2 - game_title.get_height()/2))
 
+        # Drawing aliens from different colors on the upper side
+
+        WIN.blit(ALIEN_IMAGE_BLUE, (WIDTH/2 - ALIEN_IMAGE.get_width(), 
+                                    HEIGHT/2 - ALIEN_IMAGE.get_height()*2))
+        
+        WIN.blit(ALIEN_IMAGE, (WIDTH/2 - ALIEN_IMAGE.get_width() - ALIEN_IMAGE.get_width()*2, 
+                                    HEIGHT/2 - ALIEN_IMAGE.get_height()*3))
+        
+        WIN.blit(ALIEN_IMAGE_WHITE, (WIDTH/2 - ALIEN_IMAGE.get_width() - ALIEN_IMAGE.get_width()*4, 
+                                    HEIGHT/2 - ALIEN_IMAGE.get_height()*2))
+        
+        WIN.blit(ALIEN_IMAGE_GREEN, (WIDTH/2 - ALIEN_IMAGE.get_width() - ALIEN_IMAGE.get_width()*6, 
+                                    HEIGHT/2 - ALIEN_IMAGE.get_height()*3))
+
+        # Drawing aliens from different colors on the lower side
+
+        WIN.blit(ALIEN_IMAGE_BLUE, (WIDTH/2 - ALIEN_IMAGE.get_width(), 
+                                    HEIGHT/2 + ALIEN_IMAGE.get_height()*2))
+        
+        WIN.blit(ALIEN_IMAGE, (WIDTH/2 - ALIEN_IMAGE.get_width() - ALIEN_IMAGE.get_width()*2, 
+                                    HEIGHT/2 + ALIEN_IMAGE.get_height()*3))
+        
+        WIN.blit(ALIEN_IMAGE_WHITE, (WIDTH/2 - ALIEN_IMAGE.get_width() - ALIEN_IMAGE.get_width()*4, 
+                                    HEIGHT/2 + ALIEN_IMAGE.get_height()*2))
+        
+        WIN.blit(ALIEN_IMAGE_GREEN, (WIDTH/2 - ALIEN_IMAGE.get_width() - ALIEN_IMAGE.get_width()*6, 
+                                    HEIGHT/2 + ALIEN_IMAGE.get_height()*3))
 
         last_text_displayed = 0
 
