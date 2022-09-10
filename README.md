@@ -14,4 +14,5 @@ Currently the game supports
 
 [![Demo from the game](https://img.youtube.com/vi/LxAwMLrcK4U/0.jpg)](https://www.youtube.com/watch?v=LxAwMLrcK4U)
 
+https://www.youtube.com/watch?v=LxAwMLrcK4U
 https://youtu.be/LxAwMLrcK4U
