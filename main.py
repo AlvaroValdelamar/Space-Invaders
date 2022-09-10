@@ -152,6 +152,44 @@ def draw_new_level_text(new_level_number):
     pygame.display.update()
     pygame.time.delay(1000)
 
+# Displays start screen
+def start_game_screen():
+
+    enter = False
+
+    # Until the user presses Enter
+    while enter is False:
+         # Filling the windows with a color RGB
+        WIN.fill(WHITE)
+
+        # Drawing surfaces in the screen
+        WIN.blit(BACKGROUND_IMAGE, (0, 0))
+
+        # Shows the game title
+        game_title = HEALT_FONT.render('SPACE INVADERS', 1, WHITE)
+        WIN.blit(game_title, (WIDTH/2 - game_title.get_width()/2, 
+                            HEIGHT/2 - game_title.get_height()/2))
+
+        # Indicates the player to start game pressing down the Enter Key
+        sub_title = HEALT_FONT.render('Press Enter to play', 1, WHITE)
+        WIN.blit(sub_title, (WIDTH/2 + game_title.get_width() - sub_title.get_width()/2, 
+                            HEIGHT/2 + game_title.get_width() - sub_title.get_height()/2))
+
+        # Looping through events in the game
+        for event in pygame.event.get():
+            # Creating a bullet if spacebar is pressed down
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    enter = True
+                    
+            # check if user quitted the game
+            if event.type == pygame.QUIT:
+                pygame.quit()
+        
+        #Update the display in every run of the loop
+        pygame.display.update()
+
+
 # Draws the game in the loop
 def draw_window(spaceship, aliens, bullets, user_score, spaceship_health):
     # Filling the windows with a color RGB
@@ -160,20 +198,26 @@ def draw_window(spaceship, aliens, bullets, user_score, spaceship_health):
     # Drawing surfaces in the screen
     WIN.blit(BACKGROUND_IMAGE, (0, 0))
 
+    # Draws aliens on screen
     for alien in aliens:
         WIN.blit(ALIEN_IMAGE, (alien.x, alien.y))
 
+    # Takes care of explosions from collisions
     explosion_group.draw(WIN)
     explosion_group.update()
 
+    # Draws the user's spaceship
     WIN.blit(SPACESHIP_IMAGE, (spaceship.x, spaceship.y))
 
+    # Draws the current score of the player
     score_text = HEALT_FONT.render(str(user_score), 1, WHITE)
     WIN.blit(score_text, (score_text.get_width()-10, 10))
 
+    # Draws the current health of the user
     health_text = HEALT_FONT.render("Health "+str(spaceship_health), 1, WHITE)
     WIN.blit(health_text, (WIDTH - health_text.get_width()-10, 10))
 
+    # Draws bullets shot by the user on the screen
     for bullet in bullets:
         pygame.draw.rect(WIN, PURPLE, bullet)
 
@@ -197,13 +241,13 @@ def main():
     spaceship_health = 5
     level_number = 1
 
+    start_game_screen()
+
     # Control the speed of the while loop
     clock = pygame.time.Clock()
     # Game loop that terminates when the games end
     run = True
-    pygame.time.delay(5000)
     oldepoch = time.time()
-
     while run:
         # Making sure the game runs at the set FPS
         clock.tick(FPS)
@@ -271,12 +315,14 @@ def main():
             level_text = 'LEVEL CLEARED'
             new_level_number = user_score//10
             # Draws the text to signal the current level has been cleared
+            aliens = []
+            bullets = []
+            explosion_group = pygame.sprite.Group()
             draw_next_level_screen_text(level_text)
             # Clear the game of the previous text screen
             draw_window(spaceship, aliens, bullets, user_score, spaceship_health)
             # Signal text to start new level
             draw_new_level_text(new_level_number)
-            aliens = []
             if VEL_ALIEN < VEL:
                 VEL_ALIEN *= new_level_number
             level_number += 1 
