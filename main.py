@@ -228,7 +228,17 @@ def draw_play_again_screen():
 
     # Until the user presses Enter
     while enter is False:
+        # Looping through events in the game
+        for event in pygame.event.get():
+            # Creating a bullet if spacebar is pressed down
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    enter = True
 
+            # check if user quitted the game
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                
         # Making sure the game runs at the set FPS
         clock.tick(FPS)
 
@@ -265,22 +275,30 @@ def draw_play_again_screen():
             new_epoch = time.time()
             oldepoch = new_epoch
             last_text_displayed = 0
-
-
-        # Looping through events in the game
-        for event in pygame.event.get():
-            # Creating a bullet if spacebar is pressed down
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_RETURN:
-                    enter = True
-
-            # check if user quitted the game
-            if event.type == pygame.QUIT:
-                pygame.quit()
         
         #Update the display in every run of the loop
         pygame.display.update()
         pygame.time.wait(500)
+
+def draw_first_level_screen():
+    # We add the clock to keep track of the frames
+    clock = pygame.time.Clock()
+    clock.tick(FPS)
+
+    # Filling the windows with a color RGB
+    WIN.fill(WHITE)
+
+    # Drawing surfaces in the screen
+    WIN.blit(BACKGROUND_IMAGE, (0, 0))
+
+    # Shows first level text
+    level_1_text = HEALT_FONT.render('LEVEL 1', 1, WHITE)
+    WIN.blit(level_1_text, (WIDTH/2 - level_1_text.get_width()/2, 
+                                HEIGHT/2 - level_1_text.get_height()/2))
+    
+    # Updates screen
+    pygame.display.update()
+    pygame.time.wait(1300)
 
 # Draws the game in the loop
 def draw_window(spaceship, aliens, bullets, user_score, spaceship_health, explosion_group):
@@ -326,6 +344,9 @@ def main():
     # and if this user hasn't lost yet
     if first_game:
         start_game_screen()
+    
+    # Draws the first level text on the screen
+    draw_first_level_screen()
 
     # Rectangle to keep track of the user spaceship
     spaceship = pygame.Rect(300, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
@@ -359,7 +380,6 @@ def main():
             for x in range(8):
                 alien = pygame.Rect(60 * x + 30, ALIEN_HEIGHT, ALIEN_WIDTH, ALIEN_HEIGHT)
                 aliens.append(alien)
-
 
         # Looping through events in the game
         for event in pygame.event.get():
@@ -413,8 +433,13 @@ def main():
             main()
         
         # DISPLAY CHANGES FOR NEW LEVEL
+        # New level is reached when the user makes 10 points; shoots 10 aliens
+        # So this screen is only displayed when the user scores 10 points and the remainder of the score and level is 10 
+        # i.e. 10%1 = 10, 15%1 != 10,  20/2 = 10, and so on
         if (user_score % 10 == 0) and (user_score > 0) and (user_score / level_number == 10):
+            # Text to showcase the level was cleared
             level_text = 'LEVEL CLEARED'
+            # New level is gotten from when user makes 10 points; shoots 10 aliens
             new_level_number = user_score//10
             # Draws the text to signal the current level has been cleared
             aliens = []
@@ -424,7 +449,7 @@ def main():
             # Clear the game of the previous text screen
             draw_window(spaceship, aliens, bullets, user_score, spaceship_health, explosion_group)
             # Signal text to start new level
-            draw_new_level_text(new_level_number)
+            draw_new_level_text(new_level_number + 1) # Adds 1 because we start on the first level
             if VEL_ALIEN < VEL:
                 VEL_ALIEN *= new_level_number
             level_number += 1
