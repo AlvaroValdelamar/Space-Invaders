@@ -188,6 +188,7 @@ def start_game_screen():
 
         last_text_displayed = 0
 
+        # This is for tilting the press enter to play text
         if (new_epoch - oldepoch > 1) and (last_text_displayed == 0):
             sub_title = SUB_FONT.render('Press Enter to play', 1, WHITE)
             WIN.blit(sub_title, (WIDTH/2 - sub_title.get_width()/2, 
@@ -251,8 +252,7 @@ def draw_play_again_screen():
         # Drawing surfaces in the screen
         WIN.blit(BACKGROUND_IMAGE, (0, 0))
 
-        # Shows the game title
-        
+        # Shows the exit game or play again text
         exit_game_txt = SUB_FONT.render('Exit game', 1, WHITE)
         WIN.blit(exit_game_txt, (WIDTH/2 - exit_game_txt.get_width()/2, 
                             HEIGHT/2 - exit_game_txt.get_height()*2))
@@ -263,6 +263,7 @@ def draw_play_again_screen():
 
         last_text_displayed = 0
 
+        # This is for tilting the play again text
         if (new_epoch - oldepoch > 1) and (last_text_displayed == 0):
             sub_title = SUB_FONT.render('Press Enter to play again', 1, WHITE)
             WIN.blit(sub_title, (WIDTH/2 - sub_title.get_width()/2, 
@@ -334,7 +335,7 @@ def draw_window(spaceship, aliens, bullets, user_score, spaceship_health, explos
     #Update the display in every run of the loop
     pygame.display.update()
 
-
+# Signals if the user hasn't lost for the first time.
 first_game = True
 # Main function that runs the game
 def main():
