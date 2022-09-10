@@ -25,8 +25,12 @@ pygame.display.set_caption('Space Invaders')
 # Health font for display
 HEALT_FONT = pygame.font.SysFont('comicsans', 40)
 
+# Subtitle font
+SUB_FONT = pygame.font.SysFont('comicsans', 30)
+
 WHITE = (255, 255, 255) # White color in RGB tuple
-PURPLE = (255, 0, 255)
+PURPLE = (255, 0, 255) # Purple color in RGB tuple
+RED = (255, 0, 0) # Red color in RGB tuple
 
 SPACESHIP_WIDTH, SPACESHIP_HEIGHT = 40, 40
 ALIEN_WIDTH, ALIEN_HEIGHT = 25, 25
@@ -157,8 +161,20 @@ def start_game_screen():
 
     enter = False
 
+    # Control the speed of the while loop
+    clock = pygame.time.Clock()
+    
+    oldepoch = time.time()
+
     # Until the user presses Enter
     while enter is False:
+
+        # Making sure the game runs at the set FPS
+        clock.tick(FPS)
+
+        # Keeps track of time
+        new_epoch = time.time()
+
          # Filling the windows with a color RGB
         WIN.fill(WHITE)
 
@@ -166,14 +182,30 @@ def start_game_screen():
         WIN.blit(BACKGROUND_IMAGE, (0, 0))
 
         # Shows the game title
+        game_title = HEALT_FONT.render('SPACE INVADERS', 1, RED)
+        WIN.blit(game_title, (WIDTH/2 - game_title.get_width()/1.95, 
+                            HEIGHT/2 - game_title.get_height()/1.7))
+        
         game_title = HEALT_FONT.render('SPACE INVADERS', 1, WHITE)
         WIN.blit(game_title, (WIDTH/2 - game_title.get_width()/2, 
                             HEIGHT/2 - game_title.get_height()/2))
 
-        # Indicates the player to start game pressing down the Enter Key
-        sub_title = HEALT_FONT.render('Press Enter to play', 1, WHITE)
-        WIN.blit(sub_title, (WIDTH/2 + game_title.get_width() - sub_title.get_width()/2, 
-                            HEIGHT/2 + game_title.get_width() - sub_title.get_height()/2))
+
+        last_text_displayed = 0
+
+        if (new_epoch - oldepoch > 1) and (last_text_displayed == 0):
+            sub_title = SUB_FONT.render('Press Enter to play', 1, WHITE)
+            WIN.blit(sub_title, (WIDTH/2 - sub_title.get_width()/2, 
+                                HEIGHT/2 - sub_title.get_height()/2 + game_title.get_height()))
+            
+            last_text_displayed = 1
+            oldepoch = new_epoch
+
+        elif last_text_displayed == 1:
+            new_epoch = time.time()
+            oldepoch = new_epoch
+            last_text_displayed = 0
+
 
         # Looping through events in the game
         for event in pygame.event.get():
@@ -181,13 +213,14 @@ def start_game_screen():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     enter = True
-                    
+
             # check if user quitted the game
             if event.type == pygame.QUIT:
                 pygame.quit()
         
         #Update the display in every run of the loop
         pygame.display.update()
+        pygame.time.wait(500)
 
 
 # Draws the game in the loop
