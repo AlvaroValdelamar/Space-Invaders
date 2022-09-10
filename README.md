@@ -12,4 +12,4 @@ Currently the game supports
 - Explosion animations for collisions between user and aliens, and aliens and bullets
 - Play Again? Screen
 
-https://youtu.be/LxAwMLrcK4U
+[![Watch the video](https://img.youtu.be/LxAwMLrcK4U/maxresdefault.jpg)](https://youtu.be/LxAwMLrcK4U)
