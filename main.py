@@ -85,11 +85,6 @@ class Explosion(pygame.sprite.Sprite):
 		if self.index >= len(self.images) - 1 and self.counter >= explosion_speed:
 			self.kill()
 
-
-explosion_group = pygame.sprite.Group()
-
-
-
 # Change spaceship positions for keys pressed
 def spaceship_movement(keys_pressed, spaceship):
     # Adding movement to the spaceship
@@ -104,7 +99,7 @@ def spaceship_movement(keys_pressed, spaceship):
         spaceship.y += VEL
 
 # Moves aliens and checks they collided with the user spaceship
-def alien_movement(aliens, spaceship):
+def alien_movement(aliens, spaceship, explosion_group):
     for alien in aliens:
         alien.y += VEL_ALIEN
         if alien.colliderect(spaceship): # Check if a bullets hits an alien
@@ -117,7 +112,7 @@ def alien_movement(aliens, spaceship):
             aliens.remove(alien)
 
 # Moves bullets and check if the collided with an alien
-def handle_bullets(bullets, aliens):
+def handle_bullets(bullets, aliens, explosion_group):
     for bullet in bullets:  # Loop through all bullets in the game
         bullet.y -= VEL_BULLET # Moving bullets
         for alien in aliens:
@@ -288,7 +283,7 @@ def draw_play_again_screen():
         pygame.time.wait(500)
 
 # Draws the game in the loop
-def draw_window(spaceship, aliens, bullets, user_score, spaceship_health):
+def draw_window(spaceship, aliens, bullets, user_score, spaceship_health, explosion_group):
     # Filling the windows with a color RGB
     WIN.fill(WHITE)
 
@@ -321,12 +316,16 @@ def draw_window(spaceship, aliens, bullets, user_score, spaceship_health):
     #Update the display in every run of the loop
     pygame.display.update()
 
+
+first_game = True
 # Main function that runs the game
 def main():
-    global VEL_ALIEN
+    global VEL_ALIEN, first_game
 
     # Loops through the start game screen until the user presses down the Enter key
-    start_game_screen()
+    # and if this user hasn't lost yet
+    if first_game:
+        start_game_screen()
 
     # Rectangle to keep track of the user spaceship
     spaceship = pygame.Rect(300, 300, SPACESHIP_WIDTH, SPACESHIP_HEIGHT)
@@ -337,6 +336,9 @@ def main():
         aliens.append(alien)
     # Bullets fired by the user
     bullets = []
+
+    # Explosions from collisions
+    explosion_group = pygame.sprite.Group()
 
     user_score = 0
     spaceship_health = 5
@@ -375,30 +377,29 @@ def main():
 
             if event.type == USER_HIT:
                 user_score += 1
-                explosions = []
 
             if event.type == ALIEN_HIT:
                 spaceship_health -= 1
                 if spaceship_health <= 0:
                     spaceship_health = 0
-                explosions = []
 
 
         # Draw and check for bullet hits to aliens
-        handle_bullets(bullets, aliens)
+        handle_bullets(bullets, aliens, explosion_group)
 
         # Read keys pressed by the user
         keys_pressed = pygame.key.get_pressed()
         # Move the user spaceship
         spaceship_movement(keys_pressed, spaceship)
         # Move the alien
-        alien_movement(aliens, spaceship)
+        alien_movement(aliens, spaceship, explosion_group)
 
         # Update position of the player and aliens
-        draw_window(spaceship, aliens, bullets, user_score, spaceship_health)
+        draw_window(spaceship, aliens, bullets, user_score, spaceship_health, explosion_group)
 
         # DISPLAY CHANGES WHEN USER LOSES THE GAME
         if spaceship_health <= 0:
+            first_game = False
             game_over_text = 'GAME OVER'
             # Display text to the user to show that they have lost the game
             draw_end_screen_text(game_over_text)
@@ -409,7 +410,7 @@ def main():
             draw_end_screen_text(final_score_text)
             # Display Play Again? Screen
             draw_play_again_screen()
-            break
+            main()
         
         # DISPLAY CHANGES FOR NEW LEVEL
         if (user_score % 10 == 0) and (user_score > 0) and (user_score / level_number == 10):
@@ -421,12 +422,13 @@ def main():
             explosion_group = pygame.sprite.Group()
             draw_next_level_screen_text(level_text)
             # Clear the game of the previous text screen
-            draw_window(spaceship, aliens, bullets, user_score, spaceship_health)
+            draw_window(spaceship, aliens, bullets, user_score, spaceship_health, explosion_group)
             # Signal text to start new level
             draw_new_level_text(new_level_number)
             if VEL_ALIEN < VEL:
                 VEL_ALIEN *= new_level_number
-            level_number += 1 
+            level_number += 1
+            pygame.event.clear()
     
     pygame.quit() # End the game
 
