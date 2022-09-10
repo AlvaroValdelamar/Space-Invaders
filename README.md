@@ -13,12 +13,6 @@ Currently the game supports
 - Play Again? Screen
 
 Watch a gameplay of the current version here:
-<center>
-  <iframe width="560" 
-  height="315" 
-  src="https://www.youtube.com/embed/LxAwMLrcK4U" 
-  title="Gameplay Demo" 
-  frameborder="0" 
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-  </iframe>
-</center>
+[![Watch the video](https://img.youtube.com/vi/LxAwMLrcK4U/maxresdefault.jpg)](https://youtu.be/LxAwMLrcK4U)
+
+https://youtu.be/LxAwMLrcK4U
